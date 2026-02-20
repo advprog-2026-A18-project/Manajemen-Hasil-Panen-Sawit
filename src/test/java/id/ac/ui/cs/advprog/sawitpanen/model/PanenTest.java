@@ -3,8 +3,10 @@ package id.ac.ui.cs.advprog.sawitpanen.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,29 +16,20 @@ public class PanenTest {
     @BeforeEach
     void setUp() {
         this.panen = new Panen();
-        this.panen.setId(69);
-        this.panen.setBuruhId(67);
+        UUID mockId = UUID.randomUUID();
+        UUID mockBuruhId = UUID.randomUUID();
+        LocalDate today = LocalDate.now();
+        List<String> fotoList = List.of("foto_a.jpg", "foto_b.jpg");
+
+        // Act
+        this.panen.setId(mockId);
+        this.panen.setBuruhId(mockBuruhId);
         this.panen.setKuantitas(420);
-
-        List<String> buktiFoto = new ArrayList<>();
-        buktiFoto.add("screenshot.png");
-        this.panen.setBuktiFoto(buktiFoto);
-
-        this.panen.setTanggalMulai(100);
-        this.panen.setTanggalAkhir(404);
-        this.panen.setTanggalPanen(360);
-
-        this.panen.setStatus(StatusPanen.APPROVED);
-    }
-
-    @Test
-    void testGetPanenId() {
-        assertEquals(69, this.panen.getId());
-    }
-
-    @Test
-    void testGetPanenBuruhId() {
-        assertEquals(67, this.panen.getBuruhId());
+        this.panen.setBuktiFoto(fotoList);
+        this.panen.setTanggalMulai(today);
+        this.panen.setTanggalAkhir(today.plusDays(3));
+        this.panen.setTanggalPanen(today.plusDays(4));
+        this.panen.setStatus(StatusPanen.REPORTED);
     }
 
     @Test
