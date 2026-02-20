@@ -13,9 +13,9 @@ public class Panen {
     private int kuantitas;
     private List<String> buktiFoto;
 
-    private String tanggalMulai;
-    private String tanggalAkhir;
-    private String tanggalPanen;
+    private int tanggalMulai;
+    private int tanggalAkhir;
+    private int tanggalPanen;
 
     private StatusPanen status;
 }
