@@ -27,7 +27,7 @@ public class PanenController {
 
     @PostMapping("/lapor")
     public String laporPanenPost(@ModelAttribute Panen panen, Model model) {
-        panenService.create(panen);
+        panenService.lapor(panen);
         return "redirect:list";
     }
 

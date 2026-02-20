@@ -36,7 +36,7 @@ public class PanenRepositoryTest {
         panen.setTanggalMulai(1704067200); // Unix timestamp format
         panen.setTanggalAkhir(1704153600);
         panen.setTanggalPanen(1704240000);
-        panen.setStatus(StatusPanen.Approved);
+        panen.setStatus(StatusPanen.APPROVED);
         panenRepository.createPanen(panen);
 
         Iterator<Panen> panenIterator = panenRepository.findAll();
@@ -67,7 +67,7 @@ public class PanenRepositoryTest {
         panen1.setTanggalMulai(1770000000);
         panen1.setTanggalAkhir(1770086400);
         panen1.setTanggalPanen(1770172800);
-        panen1.setStatus(StatusPanen.Approved);
+        panen1.setStatus(StatusPanen.APPROVED);
         panenRepository.createPanen(panen1);
 
         Panen panen2 = new Panen();
@@ -81,7 +81,7 @@ public class PanenRepositoryTest {
         ));
         panen2.setTanggalMulai(1770172800);
         panen2.setTanggalPanen(1770000000);
-        panen2.setStatus(StatusPanen.Rejected);
+        panen2.setStatus(StatusPanen.REJECTED);
         panenRepository.createPanen(panen2);
 
         Iterator<Panen> panenIterator = panenRepository.findAll();

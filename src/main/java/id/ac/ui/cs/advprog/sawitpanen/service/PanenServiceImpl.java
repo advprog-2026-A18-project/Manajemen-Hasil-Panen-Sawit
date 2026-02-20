@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PanenServiceImpl implements PanenService {
@@ -15,16 +16,17 @@ public class PanenServiceImpl implements PanenService {
     private PanenRepository panenRepository;
 
     @Override
-    public Panen create(Panen panen) {
-        panenRepository.createPanen(panen);
+    public Panen lapor(Panen panen) {
+        panenRepository.save(panen);
         return panen;
     }
 
     @Override
     public List<Panen> findAll() {
-        Iterator<Panen> panenIterator = panenRepository.findAll();
-        List<Panen> allPanen = new ArrayList<>();
-        panenIterator.forEachRemaining(allPanen::add);
-        return allPanen;
+        return panenRepository.findAll();
+    }
+
+    public List<Panen> findByBuruhId(UUID buruhId) {
+        return panenRepository.findByBuruhId(buruhId);
     }
 }

@@ -26,7 +26,7 @@ public class PanenTest {
         this.panen.setTanggalAkhir(404);
         this.panen.setTanggalPanen(360);
 
-        this.panen.setStatus(StatusPanen.Approved);
+        this.panen.setStatus(StatusPanen.APPROVED);
     }
 
     @Test
