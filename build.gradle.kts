@@ -3,6 +3,7 @@ plugins {
     jacoco
     id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 group = "id.ac.ui.cs.advprog"
@@ -44,6 +45,9 @@ dependencies {
     testImplementation("io.github.bonigarcia:selenium-jupiter:${seleniumJupiterVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.postgresql:postgresql")
 }
 
 tasks.test {
