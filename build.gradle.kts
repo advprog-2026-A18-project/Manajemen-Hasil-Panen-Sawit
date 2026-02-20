@@ -42,14 +42,20 @@ dependencies {
     testImplementation("org.seleniumhq.selenium:selenium-java:$seleniumJavaVersion")
     testImplementation("io.github.bonigarcia:webdrivermanager:${webdriverManagerVersion}")
     testImplementation("io.github.bonigarcia:selenium-jupiter:${seleniumJupiterVersion}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+//    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    testRuntimeOnly("com.h2database:h2")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
 }
 
 tasks.test {
+    useJUnitPlatform()
+
     filter {
         excludeTestsMatching("*FunctionalTest")
     }
