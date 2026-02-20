@@ -3,6 +3,7 @@ plugins {
     jacoco
     id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.sonarqube") version "7.2.2.6593"
 }
 
 group = "id.ac.ui.cs.advprog"
@@ -23,6 +24,14 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "advprog-2026-A18-project_Manajemen-Hasil-Panen-Sawit")
+        property("sonar.organization", "advprog-2026-a18-project")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 val seleniumJavaVersion = "4.14.1"
