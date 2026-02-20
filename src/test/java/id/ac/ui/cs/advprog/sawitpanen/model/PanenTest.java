@@ -15,21 +15,21 @@ public class PanenTest {
 
     @BeforeEach
     void setUp() {
-        Panen panen = new Panen();
+        this.panen = new Panen();
         UUID mockId = UUID.randomUUID();
         UUID mockBuruhId = UUID.randomUUID();
         LocalDate today = LocalDate.now();
         List<String> fotoList = List.of("foto_a.jpg", "foto_b.jpg");
 
         // Act
-        panen.setId(mockId);
-        panen.setBuruhId(mockBuruhId);
-        panen.setKuantitas(420);
-        panen.setBuktiFoto(fotoList);
-        panen.setTanggalMulai(today);
-        panen.setTanggalAkhir(today.plusDays(3));
-        panen.setTanggalPanen(today.plusDays(4));
-        panen.setStatus(StatusPanen.REPORTED);
+        this.panen.setId(mockId);
+        this.panen.setBuruhId(mockBuruhId);
+        this.panen.setKuantitas(420);
+        this.panen.setBuktiFoto(fotoList);
+        this.panen.setTanggalMulai(today);
+        this.panen.setTanggalAkhir(today.plusDays(3));
+        this.panen.setTanggalPanen(today.plusDays(4));
+        this.panen.setStatus(StatusPanen.REPORTED);
     }
 
     @Test
