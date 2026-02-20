@@ -1,3 +1,12 @@
 spring:
   application:
     name: sawit-panen
+
+  datasource:
+    url: jdbc:postgresql://ep-cool-band-a1updl38-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channelBinding=require
+    username: neondb_owner
+    password: npg_U36pNezxMOYA
+
+  jpa:
+    hibernate:
+      ddl-auto: update
