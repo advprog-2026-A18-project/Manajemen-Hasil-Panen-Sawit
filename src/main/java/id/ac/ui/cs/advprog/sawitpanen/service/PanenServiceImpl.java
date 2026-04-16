@@ -1,10 +1,14 @@
 package id.ac.ui.cs.advprog.sawitpanen.service;
 
+import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
+import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
 import id.ac.ui.cs.advprog.sawitpanen.repository.PanenRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,17 +20,22 @@ public class PanenServiceImpl implements PanenService {
     private PanenRepository panenRepository;
 
     @Override
-    public Panen lapor(Panen panen) {
-        panenRepository.save(panen);
-        return panen;
-    }
+    @Transactional
+    public Panen createLaporan(CreatePanenRequest request) {
+        LocalDate hariIni = LocalDate.now();
+        
+        boolean sudahLaporan = panenRepository.existsByBuruhIdAndTanggalPanen(request.getBuruhId(), hariIni);
+        if (sudahLaporan)
+            throw new RuntimeException("Buruh sudah melaporkan hasil panen hari ini");
 
-    @Override
-    public List<Panen> findAll() {
-        return panenRepository.findAll();
-    }
+        Panen panen = new Panen();
+        panen.setBuruhId(request.getBuruhId());
+        panen.setKuantitasBerat(request.getKuantitasBerat());
+        panen.setBerita(request.getBerita());
+        panen.setBuktiFoto(request.getBuktiFoto());
+        panen.setTanggalPanen(hariIni);
+        panen.setStatus(StatusPanen.REPORTED);
 
-    public List<Panen> findByBuruhId(UUID buruhId) {
-        return panenRepository.findByBuruhId(buruhId);
+        return panenRepository.save(panen);
     }
 }
