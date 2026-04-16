@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.sawitpanen.controller;
 
 import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
+import id.ac.ui.cs.advprog.sawitpanen.dto.PanenResponse;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
 import id.ac.ui.cs.advprog.sawitpanen.service.PanenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,10 @@ public class PanenController {
             @RequestBody CreatePanenRequest request) {
         Panen laporanBaru = panenService.createLaporan(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(laporanBaru);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PanenResponse>> getAllPanen() {
+        return ResponseEntity.ok(panenService.getAllPanen());
     }
 }
