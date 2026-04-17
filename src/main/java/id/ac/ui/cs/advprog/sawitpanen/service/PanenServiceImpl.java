@@ -8,8 +8,12 @@ import id.ac.ui.cs.advprog.sawitpanen.exception.ConflictException;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
 import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
 import id.ac.ui.cs.advprog.sawitpanen.repository.PanenRepository;
+import id.ac.ui.cs.advprog.sawitpanen.repository.PanenSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -50,6 +54,20 @@ public class PanenServiceImpl implements PanenService {
         return panenRepository.findAll().stream()
                 .map(PanenResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<PanenResponse> getPanenByFilter(
+            UUID buruhId,
+            LocalDate tanggalMulai,
+            LocalDate tanggalAkhir,
+            LocalDate tanggalPanen,
+            StatusPanen status,
+            Pageable pageable) {
+        Specification<Panen> spec = PanenSpecification.buildFilter(
+                buruhId, tanggalMulai, tanggalAkhir, tanggalPanen, status);
+
+        return panenRepository.findAll(spec, pageable).map(PanenResponse::new);
     }
 
     @Override
