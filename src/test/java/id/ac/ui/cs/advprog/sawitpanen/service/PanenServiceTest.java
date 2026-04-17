@@ -36,7 +36,6 @@ class PanenServiceImplTest {
     @Mock
     private PanenRepository panenRepository;
 
-    // Perhatikan: Kita menyuntikkan mock ke class Implementasinya, bukan interface-nya
     @InjectMocks
     private PanenServiceImpl panenService;
 
@@ -50,14 +49,12 @@ class PanenServiceImplTest {
         dummyBuruhId = UUID.randomUUID();
         dummyPanenId = UUID.randomUUID();
 
-        // Setup request untuk createLaporan
         createRequest = new CreatePanenRequest(
                 dummyBuruhId,
                 100,
                 "Panen lancar",
                 List.of("http://foto.com/1.jpg"));
 
-        // Setup entity dummy untuk di-return oleh repository
         dummyPanen = new Panen();
         dummyPanen.setId(dummyPanenId);
         dummyPanen.setBuruhId(dummyBuruhId);
@@ -68,15 +65,10 @@ class PanenServiceImplTest {
         dummyPanen.setStatus(StatusPanen.REPORTED);
     }
 
-    // ==========================================
-    // TEST: createLaporan
-    // ==========================================
-
     @Test
     void createLaporan_Sukses_JikaBelumLaporHariIni() {
         when(panenRepository.existsByBuruhIdAndTanggalPanen(eq(dummyBuruhId), any(LocalDate.class)))
                 .thenReturn(false);
-
         when(panenRepository.save(any(Panen.class))).thenReturn(dummyPanen);
 
         PanenResponse response = panenService.createLaporan(createRequest);
@@ -98,17 +90,11 @@ class PanenServiceImplTest {
         verify(panenRepository, never()).save(any(Panen.class));
     }
 
-    // ==========================================
-    // TEST: getPanenByFilter
-    // ==========================================
-
     @Test
     void getPanenByFilter_Sukses_MengembalikanPage() {
-        // Setup data dan pageable
         Pageable pageable = PageRequest.of(0, 10);
         Page<Panen> pagedResponse = new PageImpl<>(List.of(dummyPanen));
 
-        // Karena menggunakan Specification, kita pakai "any(Specification.class)"
         when(panenRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(pagedResponse);
 
@@ -120,10 +106,6 @@ class PanenServiceImplTest {
         assertEquals(1, result.getTotalElements());
         assertEquals(dummyBuruhId, result.getContent().get(0).getBuruhId());
     }
-
-    // ==========================================
-    // TEST: processApproval
-    // ==========================================
 
     @Test
     void processApproval_Sukses_SaatDisetujui() {
@@ -146,7 +128,7 @@ class PanenServiceImplTest {
         UUID mandorId = UUID.randomUUID();
         ApprovalRequest approvalReq = new ApprovalRequest();
         approvalReq.setStatus(StatusPanen.REJECTED);
-        approvalReq.setPesanPenolakan(""); // Alasan kosong!
+        approvalReq.setPesanPenolakan("");
 
         when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
 
@@ -155,7 +137,6 @@ class PanenServiceImplTest {
         });
 
         assertTrue(exception.getMessage().contains("Alasan penolakan wajib diisi"));
-        // Pastikan tidak ada data yang tersimpan ke database kalau validasi gagal
         verify(panenRepository, never()).save(any(Panen.class));
     }
 }

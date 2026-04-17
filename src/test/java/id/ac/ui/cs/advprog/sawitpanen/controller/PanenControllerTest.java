@@ -51,7 +51,6 @@ class PanenControllerTest {
         dummyBuruhId = UUID.randomUUID();
         dummyPanenId = UUID.randomUUID();
 
-        // Setup dummy response yang akan dikembalikan oleh Mock Service
         dummyResponse = new PanenResponse();
         dummyResponse.setId(dummyPanenId);
         dummyResponse.setBuruhId(dummyBuruhId);
@@ -62,10 +61,6 @@ class PanenControllerTest {
         dummyResponse.setStatus(StatusPanen.REPORTED);
     }
 
-    // ==========================================
-    // TEST: POST /api/panen (Create)
-    // ==========================================
-
     @Test
     void createLaporanPanen_Sukses_Return201() throws Exception {
         CreatePanenRequest request = new CreatePanenRequest(
@@ -74,37 +69,29 @@ class PanenControllerTest {
                 "Panen lancar",
                 List.of("http://foto.com/1.jpg"));
 
-        // Beri tahu mock service apa yang harus dikembalikan
         when(panenService.createLaporan(any(CreatePanenRequest.class))).thenReturn(dummyResponse);
 
-        // Eksekusi HTTP Request bohongan
         mockMvc.perform(post("/api/panen")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated()) // Memastikan HTTP 201
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(dummyPanenId.toString()))
                 .andExpect(jsonPath("$.status").value("REPORTED"));
     }
 
     @Test
     void createLaporanPanen_GagalValidasi_Return400() throws Exception {
-        // ARRANGE: Berat sengaja dibuat 0 (invalid berdasarkan @Min(1))
         CreatePanenRequest invalidRequest = new CreatePanenRequest(
                 dummyBuruhId,
                 0,
                 "Panen lancar",
                 List.of("http://foto.com/1.jpg"));
 
-        // ACT & ASSERT: Controller harus menolak sebelum masuk ke Service
         mockMvc.perform(post("/api/panen")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest()); // Memastikan HTTP 400
+                .andExpect(status().isBadRequest());
     }
-
-    // ==========================================
-    // TEST: GET /api/panen (Read All with Filter)
-    // ==========================================
 
     @Test
     void getPanen_Sukses_ReturnPagedData() throws Exception {
@@ -114,21 +101,16 @@ class PanenControllerTest {
                 eq(dummyBuruhId), any(), any(), any(), eq(StatusPanen.REPORTED), any(Pageable.class)))
                 .thenReturn(pagedResponse);
 
-        // Menembak endpoint dengan Query Parameters
         mockMvc.perform(get("/api/panen")
                         .param("buruh_id", dummyBuruhId.toString())
                         .param("status", "REPORTED")
                         .param("page", "0")
                         .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()) // Memastikan HTTP 200
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(dummyPanenId.toString()))
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
-
-    // ==========================================
-    // TEST: GET /api/panen/{id} (Read Detail)
-    // ==========================================
 
     @Test
     void getPanenDetail_Sukses_Return200() throws Exception {
@@ -140,24 +122,18 @@ class PanenControllerTest {
                 .andExpect(jsonPath("$.id").value(dummyPanenId.toString()));
     }
 
-    // ==========================================
-    // TEST: PATCH /api/panen/{id}/approval
-    // ==========================================
-
     @Test
     void processApproval_Sukses_Return200() throws Exception {
         UUID mandorId = UUID.randomUUID();
         ApprovalRequest approvalReq = new ApprovalRequest();
         approvalReq.setStatus(StatusPanen.APPROVED);
 
-        // Modifikasi dummyResponse agar mencerminkan status yang sudah di-approve
         dummyResponse.setStatus(StatusPanen.APPROVED);
         dummyResponse.setMandorId(mandorId);
 
         when(panenService.processApproval(eq(dummyPanenId), eq(mandorId), any(ApprovalRequest.class)))
                 .thenReturn(dummyResponse);
 
-        // Perhatikan penggunaan .header() untuk mensimulasikan Header dari API Gateway
         mockMvc.perform(patch("/api/panen/{id}/approval", dummyPanenId)
                         .header("X-User-Id", mandorId.toString())
                         .contentType(MediaType.APPLICATION_JSON)

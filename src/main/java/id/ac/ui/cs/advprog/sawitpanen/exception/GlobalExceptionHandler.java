@@ -55,9 +55,6 @@ public class GlobalExceptionHandler {
         response.setError("Internal Server Error");
         response.setMessage("Terjadi kesalahan pada server. Silakan hubungi administrator.");
 
-        // ex.printStackTrace()
-        // log.error("Unhandled exception", ex);
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

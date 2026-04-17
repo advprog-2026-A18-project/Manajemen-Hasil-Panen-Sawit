@@ -20,7 +20,6 @@ class PanenRepositoryTest {
 
     @Test
     void testExistsByBuruhIdAndTanggalPanen() {
-        // ARRANGE: Insert data betulan ke database test
         UUID buruhId = UUID.randomUUID();
         LocalDate hariIni = LocalDate.now();
 
