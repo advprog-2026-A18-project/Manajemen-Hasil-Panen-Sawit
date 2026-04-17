@@ -20,6 +20,8 @@ public class PanenResponse {
     private StatusPanen status;
     private String pesanPenolakan;
 
+    public PanenResponse() {}
+
     public PanenResponse(Panen entity) {
         this.id = entity.getId();
         this.buruhId = entity.getBuruhId();

@@ -4,10 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SawitPanenApplicationTests {
+class SawitPanenApplicationTest {
 
     @Test
     void contextLoads() {
     }
 
+    @Test
+    void testMainMethod() {
+        SawitPanenApplication.main(new String[] {});
+    }
 }

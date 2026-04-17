@@ -3,7 +3,6 @@ package id.ac.ui.cs.advprog.sawitpanen.controller;
 import id.ac.ui.cs.advprog.sawitpanen.dto.ApprovalRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.PanenResponse;
-import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
 import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
 import id.ac.ui.cs.advprog.sawitpanen.service.PanenService;
 import jakarta.validation.Valid;
@@ -14,14 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,9 +42,7 @@ public class PanenController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        // Sort opsional: Urutkan dari yang terbaru
         Pageable pageable = PageRequest.of(page, size, Sort.by("tanggalPanen").descending());
-
         Page<PanenResponse> hasilFilter = panenService.getPanenByFilter(
                 buruhId, tanggalMulai, tanggalAkhir, tanggalPanen, status, pageable
         );
