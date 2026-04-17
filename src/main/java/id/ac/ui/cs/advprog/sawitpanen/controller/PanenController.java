@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.PanenResponse;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
 import id.ac.ui.cs.advprog.sawitpanen.service.PanenService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -24,7 +25,7 @@ public class PanenController {
 
     @PostMapping
     public ResponseEntity<PanenResponse> createLaporanPanen(
-            @RequestBody CreatePanenRequest request) {
+            @Valid @RequestBody CreatePanenRequest request) {
         PanenResponse laporanBaru = panenService.createLaporan(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(laporanBaru);
     }
@@ -43,7 +44,7 @@ public class PanenController {
     public ResponseEntity<PanenResponse> processApproval(
             @RequestHeader("X-User-Id") UUID mandorId,
             @PathVariable UUID id,
-            @RequestBody ApprovalRequest request) {
+            @Valid @RequestBody ApprovalRequest request) {
         PanenResponse response = panenService.processApproval(id, mandorId, request);
         return ResponseEntity.ok(response);
     }
