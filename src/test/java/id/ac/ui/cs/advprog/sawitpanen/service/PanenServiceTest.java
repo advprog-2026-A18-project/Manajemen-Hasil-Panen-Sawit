@@ -108,6 +108,37 @@ class PanenServiceImplTest {
     }
 
     @Test
+    void getAllPanen_Sukses_MengembalikanList() {
+        when(panenRepository.findAll()).thenReturn(List.of(dummyPanen));
+
+        List<PanenResponse> responses = panenService.getAllPanen();
+
+        assertEquals(1, responses.size());
+        assertEquals(dummyPanenId, responses.get(0).getId());
+    }
+
+    @Test
+    void getPanenById_Sukses_MengembalikanData() {
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+
+        PanenResponse response = panenService.getPanenById(dummyPanenId);
+
+        assertNotNull(response);
+        assertEquals(dummyPanenId, response.getId());
+    }
+
+    @Test
+    void getPanenById_Gagal_DataTidakDitemukan() {
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.empty());
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.getPanenById(dummyPanenId);
+        });
+
+        assertEquals("Data panen tidak ditemukan", ex.getMessage());
+    }
+
+    @Test
     void processApproval_Sukses_SaatDisetujui1() {
         UUID mandorId = UUID.randomUUID();
         ApprovalRequest approvalReq = new ApprovalRequest();
@@ -141,38 +172,7 @@ class PanenServiceImplTest {
     }
 
     @Test
-    void getAllPanen_Sukses_MengembalikanList() {
-        when(panenRepository.findAll()).thenReturn(List.of(dummyPanen));
-
-        List<PanenResponse> responses = panenService.getAllPanen();
-
-        assertEquals(1, responses.size());
-        assertEquals(dummyPanenId, responses.get(0).getId());
-    }
-
-    @Test
-    void getPanenById_Sukses_MengembalikanData() {
-        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
-
-        PanenResponse response = panenService.getPanenById(dummyPanenId);
-
-        assertNotNull(response);
-        assertEquals(dummyPanenId, response.getId());
-    }
-
-    @Test
-    void getPanenById_Gagal_DataTidakDitemukan() {
-        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.empty());
-
-        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
-            panenService.getPanenById(dummyPanenId);
-        });
-
-        assertEquals("Data panen tidak ditemukan", ex.getMessage());
-    }
-
-    @Test
-    void processApproval_Gagal_DataTidakDitemukan() {
+    void processApproval_Gagal_DataTidakDitemukan1() {
         UUID mandorId = UUID.randomUUID();
         ApprovalRequest req = new ApprovalRequest();
 
@@ -251,5 +251,123 @@ class PanenServiceImplTest {
 
         assertEquals(StatusPanen.APPROVED, response.getStatus());
         assertEquals(mandorId, response.getMandorId());
+    }
+
+    // =========================================================================
+    // BLOK TEST KHUSUS: processApproval
+    // Menghabisi 100% Coverage & Seluruh Kombinasi Branch Jacoco
+    // =========================================================================
+
+    // SCENARIO 1: orElseThrow (Data tidak ditemukan)
+    @Test
+    void processApproval_Gagal_DataTidakDitemukan() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest req = new ApprovalRequest();
+        req.setStatus(StatusPanen.APPROVED);
+
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.empty());
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.processApproval(dummyPanenId, mandorId, req);
+        });
+
+        assertEquals("Data panen tidak ditemukan", ex.getMessage());
+        verify(panenRepository, never()).save(any()); // Pastikan tidak ada aksi save
+    }
+
+    // SCENARIO 2: If Pertama (Status Panen di DB BUKAN Reported)
+    @Test
+    void processApproval_Gagal_StatusDbBukanReported() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest req = new ApprovalRequest();
+        req.setStatus(StatusPanen.APPROVED);
+
+        // Kita set status di DB menjadi PENDING (Bukan REPORTED)
+        dummyPanen.setStatus(StatusPanen.APPROVED);
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.processApproval(dummyPanenId, mandorId, req);
+        });
+
+        assertEquals("Status panen sudah diproses sebelumnya.", ex.getMessage());
+        verify(panenRepository, never()).save(any());
+    }
+
+    // SCENARIO 3: If Kedua (A=True, B=True) -> REJECTED & Pesan Null
+    @Test
+    void processApproval_Gagal_RejectPesanNull() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest req = new ApprovalRequest();
+        req.setStatus(StatusPanen.REJECTED);
+        req.setPesanPenolakan(null); // Explicit Null
+
+        dummyPanen.setStatus(StatusPanen.REPORTED);
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.processApproval(dummyPanenId, mandorId, req);
+        });
+
+        assertEquals("Alasan penolakan wajib diisi.", ex.getMessage());
+        verify(panenRepository, never()).save(any());
+    }
+
+    // SCENARIO 4: If Kedua (A=True, B=False, C=True) -> REJECTED & Pesan Blank/Spasi
+    @Test
+    void processApproval_Gagal_RejectPesanBlank() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest req = new ApprovalRequest();
+        req.setStatus(StatusPanen.REJECTED);
+        req.setPesanPenolakan("   "); // Explicit Blank
+
+        dummyPanen.setStatus(StatusPanen.REPORTED);
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.processApproval(dummyPanenId, mandorId, req);
+        });
+
+        assertEquals("Alasan penolakan wajib diisi.", ex.getMessage());
+        verify(panenRepository, never()).save(any());
+    }
+
+    // SCENARIO 5: SUKSES REJECT (A=True, B=False, C=False) -> Pesan Valid
+    @Test
+    void processApproval_Sukses_RejectDenganAlasan() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest req = new ApprovalRequest();
+        req.setStatus(StatusPanen.REJECTED);
+        req.setPesanPenolakan("Kualitas buah belum matang sempurna.");
+
+        dummyPanen.setStatus(StatusPanen.REPORTED);
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+        when(panenRepository.save(any(Panen.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        PanenResponse response = panenService.processApproval(dummyPanenId, mandorId, req);
+
+        assertEquals(StatusPanen.REJECTED, response.getStatus());
+        assertEquals("Kualitas buah belum matang sempurna.", response.getPesanPenolakan());
+        assertEquals(mandorId, response.getMandorId());
+        verify(panenRepository, times(1)).save(any(Panen.class)); // Pastikan berhasil save
+    }
+
+    // SCENARIO 6: SUKSES APPROVE (A=False) -> Short-circuit logika OR
+    @Test
+    void processApproval_Sukses_ApproveTanpaAlasan() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest req = new ApprovalRequest();
+        req.setStatus(StatusPanen.APPROVED);
+        req.setPesanPenolakan(null); // Pesan null harusnya lolos karena di-Approve
+
+        dummyPanen.setStatus(StatusPanen.REPORTED);
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+        when(panenRepository.save(any(Panen.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        PanenResponse response = panenService.processApproval(dummyPanenId, mandorId, req);
+
+        assertEquals(StatusPanen.APPROVED, response.getStatus());
+        assertEquals(mandorId, response.getMandorId());
+        verify(panenRepository, times(1)).save(any(Panen.class));
     }
 }
