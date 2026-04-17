@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/panen")
@@ -30,5 +31,10 @@ public class PanenController {
     @GetMapping
     public ResponseEntity<List<PanenResponse>> getAllPanen() {
         return ResponseEntity.ok(panenService.getAllPanen());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PanenResponse> getPanenDetail(@PathVariable UUID id) {
+        return ResponseEntity.ok(panenService.getPanenById(id));
     }
 }

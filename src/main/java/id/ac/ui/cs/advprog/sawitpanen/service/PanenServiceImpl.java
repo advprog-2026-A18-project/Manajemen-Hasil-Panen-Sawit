@@ -48,4 +48,11 @@ public class PanenServiceImpl implements PanenService {
                 .map(PanenResponse::new)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public PanenResponse getPanenById(UUID panenId) {
+        Panen panen = panenRepository.findById(panenId)
+                .orElseThrow(() -> new RuntimeException("Data panen tidak ditemukan"));
+        return new PanenResponse(panen);
+    }
 }

@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface PanenService {
     public PanenResponse createLaporan(CreatePanenRequest request);
     public List<PanenResponse> getAllPanen();
+    public PanenResponse getPanenById(UUID panenId);
 }
