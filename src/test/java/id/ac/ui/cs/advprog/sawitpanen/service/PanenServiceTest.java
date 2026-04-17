@@ -139,4 +139,39 @@ class PanenServiceImplTest {
         assertTrue(exception.getMessage().contains("Alasan penolakan wajib diisi"));
         verify(panenRepository, never()).save(any(Panen.class));
     }
+
+    @Test
+    void getAllPanen_Sukses_MengembalikanList() {
+        // Arrange
+        when(panenRepository.findAll()).thenReturn(List.of(dummyPanen));
+
+        // Act
+        List<PanenResponse> responses = panenService.getAllPanen();
+
+        // Assert
+        assertEquals(1, responses.size());
+        assertEquals(dummyPanenId, responses.get(0).getId());
+    }
+
+    @Test
+    void getPanenById_Sukses_MengembalikanData() {
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.of(dummyPanen));
+
+        PanenResponse response = panenService.getPanenById(dummyPanenId);
+
+        assertNotNull(response);
+        assertEquals(dummyPanenId, response.getId());
+    }
+
+    @Test
+    void getPanenById_Gagal_DataTidakDitemukan() {
+        // Simulasi database tidak menemukan data
+        when(panenRepository.findById(dummyPanenId)).thenReturn(Optional.empty());
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.getPanenById(dummyPanenId);
+        });
+
+        assertEquals("Data panen tidak ditemukan", ex.getMessage());
+    }
 }
