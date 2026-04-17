@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class PanenSpecification {
+    private PanenSpecification() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Specification<Panen> buildFilter(
             UUID buruhId,
             LocalDate tanggalMulai,
