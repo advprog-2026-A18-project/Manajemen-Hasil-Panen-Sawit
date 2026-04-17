@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.sawitpanen.service;
 
+import id.ac.ui.cs.advprog.sawitpanen.dto.ApprovalRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.PanenResponse;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
@@ -54,5 +55,28 @@ public class PanenServiceImpl implements PanenService {
         Panen panen = panenRepository.findById(panenId)
                 .orElseThrow(() -> new RuntimeException("Data panen tidak ditemukan"));
         return new PanenResponse(panen);
+    }
+
+    @Override
+    @Transactional
+    public PanenResponse processApproval(UUID panenId, UUID mandorId, ApprovalRequest request) {
+        Panen panen = panenRepository.findById(panenId)
+                .orElseThrow(() -> new RuntimeException("Data panen tidak ditemukan"));
+
+        if (panen.getStatus() != StatusPanen.REPORTED) {
+            throw new RuntimeException("Status panen sudah diproses sebelumnya.");
+        }
+
+        if (request.getStatus() == StatusPanen.REJECTED &&
+                (request.getPesanPenolakan() == null || request.getPesanPenolakan().isBlank())) {
+            throw new RuntimeException("Alasan penolakan wajib diisi.");
+        }
+
+        panen.setStatus(request.getStatus());
+        panen.setMandorId(mandorId);
+        panen.setPesanPenolakan(request.getPesanPenolakan());
+
+        Panen updatedEntity = panenRepository.save(panen);
+        return new PanenResponse(updatedEntity);
     }
 }

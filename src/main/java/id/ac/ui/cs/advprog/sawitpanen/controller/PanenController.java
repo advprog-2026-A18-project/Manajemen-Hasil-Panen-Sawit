@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.sawitpanen.controller;
 
+import id.ac.ui.cs.advprog.sawitpanen.dto.ApprovalRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.PanenResponse;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
@@ -36,5 +37,14 @@ public class PanenController {
     @GetMapping("/{id}")
     public ResponseEntity<PanenResponse> getPanenDetail(@PathVariable UUID id) {
         return ResponseEntity.ok(panenService.getPanenById(id));
+    }
+
+    @PatchMapping("/{id}/approval")
+    public ResponseEntity<PanenResponse> processApproval(
+            @RequestHeader("X-User-Id") UUID mandorId,
+            @PathVariable UUID id,
+            @RequestBody ApprovalRequest request) {
+        PanenResponse response = panenService.processApproval(id, mandorId, request);
+        return ResponseEntity.ok(response);
     }
 }
