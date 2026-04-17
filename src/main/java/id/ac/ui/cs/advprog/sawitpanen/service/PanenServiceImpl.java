@@ -3,6 +3,8 @@ package id.ac.ui.cs.advprog.sawitpanen.service;
 import id.ac.ui.cs.advprog.sawitpanen.dto.ApprovalRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.CreatePanenRequest;
 import id.ac.ui.cs.advprog.sawitpanen.dto.PanenResponse;
+import id.ac.ui.cs.advprog.sawitpanen.exception.BadRequestException;
+import id.ac.ui.cs.advprog.sawitpanen.exception.ConflictException;
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
 import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
 import id.ac.ui.cs.advprog.sawitpanen.repository.PanenRepository;
@@ -29,7 +31,7 @@ public class PanenServiceImpl implements PanenService {
         
         boolean sudahLaporan = panenRepository.existsByBuruhIdAndTanggalPanen(request.getBuruhId(), hariIni);
         if (sudahLaporan)
-            throw new RuntimeException("Buruh sudah melaporkan hasil panen hari ini");
+            throw new ConflictException("Buruh sudah melaporkan hasil panen hari ini");
 
         Panen panen = new Panen();
         panen.setBuruhId(request.getBuruhId());
@@ -53,7 +55,7 @@ public class PanenServiceImpl implements PanenService {
     @Override
     public PanenResponse getPanenById(UUID panenId) {
         Panen panen = panenRepository.findById(panenId)
-                .orElseThrow(() -> new RuntimeException("Data panen tidak ditemukan"));
+                .orElseThrow(() -> new BadRequestException("Data panen tidak ditemukan"));
         return new PanenResponse(panen);
     }
 
@@ -61,15 +63,15 @@ public class PanenServiceImpl implements PanenService {
     @Transactional
     public PanenResponse processApproval(UUID panenId, UUID mandorId, ApprovalRequest request) {
         Panen panen = panenRepository.findById(panenId)
-                .orElseThrow(() -> new RuntimeException("Data panen tidak ditemukan"));
+                .orElseThrow(() -> new BadRequestException("Data panen tidak ditemukan"));
 
         if (panen.getStatus() != StatusPanen.REPORTED) {
-            throw new RuntimeException("Status panen sudah diproses sebelumnya.");
+            throw new BadRequestException("Status panen sudah diproses sebelumnya.");
         }
 
         if (request.getStatus() == StatusPanen.REJECTED &&
                 (request.getPesanPenolakan() == null || request.getPesanPenolakan().isBlank())) {
-            throw new RuntimeException("Alasan penolakan wajib diisi.");
+            throw new BadRequestException("Alasan penolakan wajib diisi.");
         }
 
         panen.setStatus(request.getStatus());
