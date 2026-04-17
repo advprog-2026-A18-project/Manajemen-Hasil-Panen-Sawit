@@ -20,7 +20,6 @@ public class PanenResponse {
     private StatusPanen status;
     private String pesanPenolakan;
 
-    // Constructor untuk mapping dari Entity ke DTO
     public PanenResponse(Panen entity) {
         this.id = entity.getId();
         this.buruhId = entity.getBuruhId();
