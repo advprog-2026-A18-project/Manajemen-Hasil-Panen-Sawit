@@ -23,7 +23,7 @@ public class PanenServiceImpl implements PanenService {
 
     @Override
     @Transactional
-    public Panen createLaporan(CreatePanenRequest request) {
+    public PanenResponse createLaporan(CreatePanenRequest request) {
         LocalDate hariIni = LocalDate.now();
         
         boolean sudahLaporan = panenRepository.existsByBuruhIdAndTanggalPanen(request.getBuruhId(), hariIni);
@@ -38,7 +38,8 @@ public class PanenServiceImpl implements PanenService {
         panen.setTanggalPanen(hariIni);
         panen.setStatus(StatusPanen.REPORTED);
 
-        return panenRepository.save(panen);
+        Panen savedEntity = panenRepository.save(panen);
+        return new PanenResponse(savedEntity);
     }
 
     @Override

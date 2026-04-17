@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PanenService {
-    public Panen createLaporan(CreatePanenRequest request);
+    public PanenResponse createLaporan(CreatePanenRequest request);
     public List<PanenResponse> getAllPanen();
 }

@@ -21,9 +21,9 @@ public class PanenController {
     private PanenService panenService;
 
     @PostMapping
-    public ResponseEntity<Panen> createLaporanPanen(
+    public ResponseEntity<PanenResponse> createLaporanPanen(
             @RequestBody CreatePanenRequest request) {
-        Panen laporanBaru = panenService.createLaporan(request);
+        PanenResponse laporanBaru = panenService.createLaporan(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(laporanBaru);
     }
 
