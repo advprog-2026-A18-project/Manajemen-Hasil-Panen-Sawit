@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    # URL ini menyuruh H2 membuat database di dalam RAM (memori)
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      # Otomatis membuat tabel berdasarkan Model/Entity kamu, lalu menghapusnya setelah test selesai
+      ddl-auto: create-drop
+    show-sql: true

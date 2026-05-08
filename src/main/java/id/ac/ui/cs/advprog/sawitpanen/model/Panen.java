@@ -19,26 +19,32 @@ public class Panen {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    // --- Relasi Model ---
     @Column(name = "buruh_id", nullable = false)
     private UUID buruhId;
 
+    @Column(name = "mandor_id")
+    private UUID mandorId;
+
+    // --- Properti Panen ---
+    @Column(name = "kuantitas_berat", nullable = false)
+    private int kuantitasBerat;
+
     @Column(nullable = false)
-    private int kuantitas;
+    private String berita;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "bukti_foto")
     private List<String> buktiFoto;
 
-    @Column(name = "tanggal_mulai")
-    private LocalDate tanggalMulai;
-
-    @Column(name = "tanggal_akhir")
-    private LocalDate tanggalAkhir;
-
     @Column(name = "tanggal_panen")
     private LocalDate tanggalPanen;
 
+    // -- Status Approval --
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusPanen status;
+
+    @Column(name = "pesan_penolakan")
+    private String pesanPenolakan;
 }
