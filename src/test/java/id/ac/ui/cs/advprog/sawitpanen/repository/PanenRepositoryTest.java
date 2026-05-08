@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.sawitpanen.repository;
 
 import id.ac.ui.cs.advprog.sawitpanen.model.Panen;
 import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;

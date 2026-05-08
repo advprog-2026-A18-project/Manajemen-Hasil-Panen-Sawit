@@ -23,6 +23,7 @@ public class PanenSpecification {
             StatusPanen status) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+            String TANGGAL_PANEN = "tanggalPanen";
 
             if (buruhId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("buruhId"), buruhId));
@@ -33,13 +34,13 @@ public class PanenSpecification {
             }
 
             if (tanggalPanen != null) {
-                predicates.add(criteriaBuilder.equal(root.get("tanggalPanen"), tanggalPanen));
+                predicates.add(criteriaBuilder.equal(root.get(TANGGAL_PANEN), tanggalPanen));
             } else {
                 if (tanggalMulai != null) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("tanggalPanen"), tanggalMulai));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(TANGGAL_PANEN), tanggalMulai));
                 }
                 if (tanggalAkhir != null) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("tanggalPanen"), tanggalAkhir));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(TANGGAL_PANEN), tanggalAkhir));
                 }
             }
 

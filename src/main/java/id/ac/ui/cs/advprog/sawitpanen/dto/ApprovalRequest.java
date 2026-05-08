@@ -1,8 +1,8 @@
 package id.ac.ui.cs.advprog.sawitpanen.dto;
 
 import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.antlr.v4.runtime.misc.NotNull;
 
 @Data
 public class ApprovalRequest {

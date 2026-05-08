@@ -51,7 +51,7 @@ public class PanenServiceImpl implements PanenService {
     public List<PanenResponse> getAllPanen() {
         return panenRepository.findAll().stream()
                 .map(PanenResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

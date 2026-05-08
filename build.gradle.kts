@@ -80,3 +80,7 @@ tasks.jacocoTestReport {
         html.required.set(true)
     }
 }
+
+dependencyLocking {
+    lockAllConfigurations()
+}
