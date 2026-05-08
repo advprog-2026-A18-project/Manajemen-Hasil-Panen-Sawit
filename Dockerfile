@@ -6,6 +6,7 @@ COPY gradle ./gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 
+RUN sed -i 's/\r$//' ./gradlew
 RUN chmod +x ./gradlew
 
 RUN ./gradlew dependencies --no-daemon
