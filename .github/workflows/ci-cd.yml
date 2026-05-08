@@ -1,9 +1,9 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches: [ "main", "staging" ]
+    branches: ["main", "staging"]
   pull_request:
-    branches: [ "main", "staging" ]
+    branches: ["main", "staging"]
 jobs:
 
   Continuous-Integration:
@@ -32,16 +32,43 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info -D sonar.projectKey=advprog-2026-A18-project_Manajemen-Hasil-Panen-Sawit -D sonar.organization=advprog-2026-a18-project -D sonar.host.url=https://sonarcloud.io/
+        run: ./gradlew build sonar --info
 
   Continuous-Deployment:
     needs: Continuous-Integration
     runs-on: ubuntu-22.04
-    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || (github.event_name == 'pull_request' && github.base_ref == 'main')
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: Dummy Deploy Step
+      - name: Check out the Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java toolchain
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+
+      - name: Build JAR File
         run: |
-          echo "Starting deployment..."
-          echo "Contacting to PaaS..."
-          echo "Info: Platform as a Service is unavailable."
-          echo "[DUMMY] Application succeed to be deployed!"
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      - name: Log in to GHCR
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/advprog-2026-a18-project/manajemen-hasil-panen-sawit:latest
