@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.sonarqube") version "7.2.2.6593"
+    id("com.google.protobuf") version "0.9.5"
 }
 
 group = "id.ac.ui.cs.advprog"
@@ -38,6 +39,8 @@ val seleniumJavaVersion = "4.14.1"
 val seleniumJupiterVersion = "5.0.1"
 val webdriverManagerVersion = "5.6.3"
 val junitJupiterVersion = "5.9.1"
+val grpcVersion = "1.73.0"
+val protobufVersion = "4.31.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -46,8 +49,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.postgresql:postgresql")
+    implementation("io.grpc:grpc-protobuf:$grpcVersion")
+    implementation("io.grpc:grpc-stub:$grpcVersion")
+    implementation("io.grpc:grpc-netty-shaded:$grpcVersion")
+    implementation("com.google.protobuf:protobuf-java:$protobufVersion")
 
     compileOnly("org.projectlombok:lombok")
+    compileOnly("org.apache.tomcat:annotations-api:6.0.53")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
@@ -84,4 +92,22 @@ tasks.jacocoTestReport {
 
 dependencyLocking {
     lockAllConfigurations()
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+    plugins {
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
+        }
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.plugins {
+                create("grpc")
+            }
+        }
+    }
 }

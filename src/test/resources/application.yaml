@@ -11,3 +11,7 @@ spring:
       # Otomatis membuat tabel berdasarkan Model/Entity kamu, lalu menghapusnya setelah test selesai
       ddl-auto: create-drop
     show-sql: true
+
+grpc:
+  server:
+    enabled: false
