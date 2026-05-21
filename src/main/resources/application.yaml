@@ -22,3 +22,10 @@ grpc:
   server:
     enabled: ${GRPC_SERVER_ENABLED:true}
     port: ${GRPC_PORT:9093}
+
+internal:
+  grpc:
+    auth:
+      enabled: ${AUTH_GRPC_ENABLED:true}
+      host: ${AUTH_GRPC_HOST:localhost}
+      port: ${AUTH_GRPC_PORT:9091}
