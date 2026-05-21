@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface PanenRepository extends JpaRepository<Panen, UUID>, JpaSpecificationExecutor<Panen> {
     boolean existsByBuruhIdAndTanggalPanen(UUID buruhId, LocalDate tanggalPanen);
+    List<Panen> findByBuruhId(UUID buruhId);
 }

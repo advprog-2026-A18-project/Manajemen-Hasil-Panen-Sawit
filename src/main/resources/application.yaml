@@ -1,4 +1,11 @@
+server:
+  port: 8083
+
 spring:
+
+  config:
+    import: optional:file:.env[.properties]
+
   application:
     name: sawit-panen
 
@@ -10,3 +17,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+grpc:
+  server:
+    enabled: ${GRPC_SERVER_ENABLED:true}
+    port: ${GRPC_PORT:9093}
