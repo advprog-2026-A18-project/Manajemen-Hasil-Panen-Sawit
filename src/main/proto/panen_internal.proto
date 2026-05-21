@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package mysawit.panen.v1;
+
+option java_multiple_files = true;
+option java_package = "id.ac.ui.cs.advprog.mysawit.grpc.panen";
+option java_outer_classname = "PanenInternalProto";
+
+service PanenInternalService {
+  rpc GetPanenById(GetPanenByIdRequest) returns (PanenResponse);
+  rpc GetPanenByIds(GetPanenByIdsRequest) returns (GetPanenByIdsResponse);
+  rpc GetPanenByBuruhId(UserPanenRequest) returns (GetPanenByBuruhIdResponse);
+  rpc ValidatePanenApproved(ValidatePanenApprovedRequest) returns (ValidatePanenApprovedResponse);
+}
+
+enum PanenStatus {
+  PANEN_STATUS_UNSPECIFIED = 0;
+  PANEN_STATUS_REPORTED = 1;
+  PANEN_STATUS_APPROVED = 2;
+  PANEN_STATUS_REJECTED = 3;
+}
+
+message GetPanenByIdRequest {
+  string panen_id = 1;
+}
+
+message GetPanenByIdsRequest {
+  repeated string panen_ids = 1;
+}
+
+message UserPanenRequest {
+  string user_id = 1;
+}
+
+message ValidatePanenApprovedRequest {
+  string panen_id = 1;
+}
+
+message PanenResponse {
+  string id = 1;
+  string buruh_id = 2;
+  string mandor_id = 3;
+  int32 kuantitas_berat = 4;
+  string berita = 5;
+  repeated string bukti_foto = 6;
+  string tanggal_panen = 7;
+  PanenStatus status = 8;
+  string pesan_penolakan = 9;
+  bool found = 10;
+}
+
+message GetPanenByIdsResponse {
+  repeated PanenResponse panen = 1;
+}
+
+message GetPanenByBuruhIdResponse {
+  repeated PanenResponse panen = 1;
+}
+
+message ValidatePanenApprovedResponse {
+  bool valid = 1;
+  string panen_id = 2;
+  string buruh_id = 3;
+  string mandor_id = 4;
+  int32 kuantitas_berat = 5;
+  string tanggal_panen = 6;
+  PanenStatus status = 7;
+  string message = 8;
+}
