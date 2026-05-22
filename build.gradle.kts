@@ -99,6 +99,7 @@ tasks.jacocoTestReport {
 
 dependencyLocking {
     lockAllConfigurations()
+    lockMode = LockMode.LENIENT
 }
 
 protobuf {
