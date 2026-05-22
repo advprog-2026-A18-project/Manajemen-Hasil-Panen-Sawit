@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PanenServiceImplTest {
+class PanenServiceTest {
 
     @Mock
     private PanenRepository panenRepository;
