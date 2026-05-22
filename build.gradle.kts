@@ -41,6 +41,8 @@ val webdriverManagerVersion = "5.6.3"
 val junitJupiterVersion = "5.9.1"
 val grpcVersion = "1.73.0"
 val protobufVersion = "4.31.1"
+val annotationsApi = "6.0.53"
+val mockitoInline = "5.2.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -53,9 +55,11 @@ dependencies {
     implementation("io.grpc:grpc-stub:$grpcVersion")
     implementation("io.grpc:grpc-netty-shaded:$grpcVersion")
     implementation("com.google.protobuf:protobuf-java:$protobufVersion")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     compileOnly("org.projectlombok:lombok")
-    compileOnly("org.apache.tomcat:annotations-api:6.0.53")
+    compileOnly("org.apache.tomcat:annotations-api:$annotationsApi")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
@@ -66,7 +70,7 @@ dependencies {
     testImplementation("io.github.bonigarcia:selenium-jupiter:${seleniumJupiterVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito:mockito-inline:$mockitoInline")
     testImplementation("com.h2database:h2")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

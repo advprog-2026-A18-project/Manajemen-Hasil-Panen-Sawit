@@ -29,3 +29,18 @@ internal:
       enabled: ${AUTH_GRPC_ENABLED:true}
       host: ${AUTH_GRPC_HOST:localhost}
       port: ${AUTH_GRPC_PORT:9091}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized
+  prometheus:
+    metrics:
+      export:
+        enabled: true
