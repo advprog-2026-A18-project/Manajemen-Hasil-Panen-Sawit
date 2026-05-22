@@ -27,14 +27,18 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PanenServiceImplTest {
+class PanenServiceTest {
 
     @Mock
     private PanenRepository panenRepository;
+
+    @Mock
+    private UserRoleValidator userRoleValidator;
 
     @InjectMocks
     private PanenServiceImpl panenService;
@@ -63,6 +67,8 @@ class PanenServiceImplTest {
         dummyPanen.setBuktiFoto(List.of("http://foto.com/1.jpg"));
         dummyPanen.setTanggalPanen(LocalDate.now());
         dummyPanen.setStatus(StatusPanen.REPORTED);
+
+        lenient().when(userRoleValidator.isValidRole(any(UUID.class), anyString())).thenReturn(true);
     }
 
     @Test
@@ -87,6 +93,18 @@ class PanenServiceImplTest {
             panenService.createLaporan(createRequest);
         });
 
+        verify(panenRepository, never()).save(any(Panen.class));
+    }
+
+    @Test
+    void createLaporan_Gagal_BilaBuruhTidakValid() {
+        when(userRoleValidator.isValidRole(dummyBuruhId, "BURUH")).thenReturn(false);
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.createLaporan(createRequest);
+        });
+
+        assertEquals("Buruh tidak ditemukan atau role tidak valid.", ex.getMessage());
         verify(panenRepository, never()).save(any(Panen.class));
     }
 
@@ -152,6 +170,21 @@ class PanenServiceImplTest {
         assertEquals(StatusPanen.APPROVED, response.getStatus());
         assertEquals(mandorId, response.getMandorId());
         verify(panenRepository, times(1)).save(any(Panen.class));
+    }
+
+    @Test
+    void processApproval_Gagal_BilaMandorTidakValid() {
+        UUID mandorId = UUID.randomUUID();
+        ApprovalRequest approvalReq = new ApprovalRequest();
+        approvalReq.setStatus(StatusPanen.APPROVED);
+        when(userRoleValidator.isValidRole(mandorId, "MANDOR")).thenReturn(false);
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
+            panenService.processApproval(dummyPanenId, mandorId, approvalReq);
+        });
+
+        assertEquals("Mandor tidak ditemukan atau role tidak valid.", ex.getMessage());
+        verify(panenRepository, never()).save(any(Panen.class));
     }
 
     @Test

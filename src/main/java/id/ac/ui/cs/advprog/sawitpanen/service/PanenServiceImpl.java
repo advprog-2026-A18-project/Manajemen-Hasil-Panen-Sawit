@@ -10,7 +10,6 @@ import id.ac.ui.cs.advprog.sawitpanen.model.StatusPanen;
 import id.ac.ui.cs.advprog.sawitpanen.repository.PanenRepository;
 import id.ac.ui.cs.advprog.sawitpanen.repository.PanenSpecification;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,12 +22,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class PanenServiceImpl implements PanenService {
-    @Autowired
-    private PanenRepository panenRepository;
+    private final PanenRepository panenRepository;
+    private final UserRoleValidator userRoleValidator;
+
+    public PanenServiceImpl(PanenRepository panenRepository, UserRoleValidator userRoleValidator) {
+        this.panenRepository = panenRepository;
+        this.userRoleValidator = userRoleValidator;
+    }
 
     @Override
     @Transactional
     public PanenResponse createLaporan(CreatePanenRequest request) {
+        validateUserRole(request.getBuruhId(), "BURUH", "Buruh");
+
         LocalDate hariIni = LocalDate.now();
         
         boolean sudahLaporan = panenRepository.existsByBuruhIdAndTanggalPanen(request.getBuruhId(), hariIni);
@@ -78,6 +84,8 @@ public class PanenServiceImpl implements PanenService {
     @Override
     @Transactional
     public PanenResponse processApproval(UUID panenId, UUID mandorId, ApprovalRequest request) {
+        validateUserRole(mandorId, "MANDOR", "Mandor");
+
         Panen panen = panenRepository.findById(panenId)
                 .orElseThrow(() -> new BadRequestException("Data panen tidak ditemukan"));
 
@@ -96,5 +104,11 @@ public class PanenServiceImpl implements PanenService {
 
         Panen updatedEntity = panenRepository.save(panen);
         return new PanenResponse(updatedEntity);
+    }
+
+    private void validateUserRole(UUID userId, String expectedRole, String label) {
+        if (!userRoleValidator.isValidRole(userId, expectedRole)) {
+            throw new BadRequestException(label + " tidak ditemukan atau role tidak valid.");
+        }
     }
 }

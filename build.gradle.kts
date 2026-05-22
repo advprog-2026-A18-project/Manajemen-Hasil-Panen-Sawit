@@ -66,10 +66,10 @@ dependencies {
     testImplementation("io.github.bonigarcia:selenium-jupiter:${seleniumJupiterVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("com.h2database:h2")
-    
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    runtimeOnly("org.postgresql:postgresql")
 }
 
 tasks.test {
@@ -85,9 +85,16 @@ tasks.test {
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
-        xml.required.set(true)
-        html.required.set(true)
+        xml.required = true
+        html.required = true
     }
+    classDirectories.setFrom(
+        fileTree("${layout.buildDirectory.get()}/classes") {
+            exclude(
+                "**/mysawit/grpc/**"
+            )
+        }
+    )
 }
 
 dependencyLocking {

@@ -250,6 +250,73 @@ class PanenInternalGrpcServiceTest {
         assertEquals(Status.INVALID_ARGUMENT.getCode(), error.getStatus().getCode());
     }
 
+    @Test
+    void getPanenById_WhenBuktiFotoIsNull_ReturnsFoundWithoutPhotos() {
+        panen.setBuktiFoto(null);
+        when(panenRepository.findById(panenId)).thenReturn(Optional.of(panen));
+
+        grpcService.getPanenById(
+                GetPanenByIdRequest.newBuilder().setPanenId(panenId.toString()).build(),
+                panenResponseObserver
+        );
+
+        PanenResponse response = capturePanenResponse();
+        assertTrue(response.getFound());
+        assertEquals(0, response.getBuktiFotoCount());
+    }
+
+    @Test
+    void validatePanenApproved_WhenRejected_ReturnsInvalidWithRejectedStatus() {
+        Panen rejectedPanen = createPanen(panenId, buruhId, mandorId, StatusPanen.REJECTED);
+        when(panenRepository.findById(panenId)).thenReturn(Optional.of(rejectedPanen));
+
+        grpcService.validatePanenApproved(
+                ValidatePanenApprovedRequest.newBuilder().setPanenId(panenId.toString()).build(),
+                validationResponseObserver
+        );
+
+        ValidatePanenApprovedResponse response = captureValidationResponse();
+        assertFalse(response.getValid());
+        assertEquals(PanenStatus.PANEN_STATUS_REJECTED, response.getStatus());
+        assertEquals("Panen belum disetujui", response.getMessage());
+    }
+
+    @Test
+    void validatePanenApproved_WhenUnspecifiedStatus_ReturnsUnspecifiedStatus() {
+        Panen unspecifiedPanen = createPanen(panenId, buruhId, mandorId, null);
+        when(panenRepository.findById(panenId)).thenReturn(Optional.of(unspecifiedPanen));
+
+        grpcService.validatePanenApproved(
+                ValidatePanenApprovedRequest.newBuilder().setPanenId(panenId.toString()).build(),
+                validationResponseObserver
+        );
+
+        ValidatePanenApprovedResponse response = captureValidationResponse();
+        assertFalse(response.getValid());
+        assertEquals(PanenStatus.PANEN_STATUS_UNSPECIFIED, response.getStatus());
+    }
+
+    @Test
+    void getPanenById_WhenNullUuidFields_ReturnsEmptyStrings() {
+        panen.setBuruhId(null);
+        panen.setMandorId(null);
+        panen.setTanggalPanen(null);
+        panen.setBerita(null);
+        panen.setPesanPenolakan(null);
+        when(panenRepository.findById(panenId)).thenReturn(Optional.of(panen));
+
+        grpcService.getPanenById(
+                GetPanenByIdRequest.newBuilder().setPanenId(panenId.toString()).build(),
+                panenResponseObserver
+        );
+
+        PanenResponse response = capturePanenResponse();
+        assertTrue(response.getFound());
+        assertEquals("", response.getBuruhId());
+        assertEquals("", response.getMandorId());
+        assertEquals("", response.getTanggalPanen());
+    }
+
     private PanenResponse capturePanenResponse() {
         ArgumentCaptor<PanenResponse> captor = ArgumentCaptor.forClass(PanenResponse.class);
         verify(panenResponseObserver).onNext(captor.capture());
